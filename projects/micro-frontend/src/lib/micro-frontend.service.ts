@@ -84,7 +84,23 @@ export class MicroFrontendService {
     }
   }
 
-  public sendMessageToParent(message: any): void {
+  public sendMessageToAllChilds(message: any): void {
+    this.microFrontends.map((mf) => {
+      const src = mf?.elementRef?.nativeElement?.getAttribute('src');
+      mf.elementRef.nativeElement.contentWindow?.postMessage(this.messageCustomData(message), src);
+    });
+  }
+
+  public sendMessageToParent(uri: string, message: any): void {
+    const findParentURI = this.parentURIs.find((parentURI) => {
+      return parentURI === uri;
+    });
+    if (findParentURI) {
+      parent.postMessage(this.messageCustomData(message), findParentURI);
+    }
+  }
+
+  public sendMessageToAllParents(message: any): void {
     this.parentURIs.map((uri) => {
       parent.postMessage(this.messageCustomData(message), uri);
     });
