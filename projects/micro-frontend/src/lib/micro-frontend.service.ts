@@ -5,12 +5,27 @@ export interface MicroFrontend {
   elementRef: ElementRef;
 }
 
+export interface MicroFrontendMessage {
+  data: {
+    location: Location;
+  }
+  message: any;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class MicroFrontendService {
 
-  private parentURI: string = '';
+  /**
+   * IMPORTANTE, UN HIJO PUEDE TENER MUCHOS PADRES, HACER QUE FUNCIONE IGUAL QUE CON LOS HIJOS, CON VARIOS PADRES.
+   * string -> array de strings
+   * se inicializa de forma automatica con los antecesors no hace falta especificar url del padre
+   * si se debe poder especificar un array estricto de padres en cuyo caso no se inicializa de forma automática
+   * para poder restringuir quien puede o no comunicarse como padre
+   */
+
+  private parentURIs: string[] = [''];
   private microFrontends: MicroFrontend[] = [];
   private onMessage$: Subject<any> = new Subject();
 
@@ -19,10 +34,10 @@ export class MicroFrontendService {
   private initOnMessageEvent(): void {
     window.onmessage = (event: any) => {
       if (
-        (this.parentURI === event.origin) ||
+        (this.parentURIs[0] === event.origin) ||
         (this.findMicroFrontendByOrigin(event.origin))
       ) {
-        this.onMessage$.next(event.data);
+        this.onMessage$.next(event);
       }
     }
   }
@@ -35,8 +50,17 @@ export class MicroFrontendService {
     return this.microFrontends.find((mf, index) => mf?.elementRef?.nativeElement?.getAttribute('name') === name);
   }
 
-  public init(parentURI: string = ''): void {
-    this.parentURI = parentURI;
+  private messageCustomData(message: any): MicroFrontendMessage {
+    return {
+      data: {
+        location: JSON.parse(JSON.stringify(window.location)),
+      },
+      message
+    }
+  }
+
+  public init(parentURIs: string[] = ['']): void {
+    this.parentURIs = parentURIs;
     this.initOnMessageEvent();
   }
 
@@ -44,20 +68,22 @@ export class MicroFrontendService {
     this.microFrontends.push(microFrontend);
   }
 
+  public getOnMessageObservable(): Observable<any> {
+    return this.onMessage$.asObservable();
+  }
+
   public sendMessageToChild(name: string, message: any): void {
     const mf = this.findMicroFrontendByName(name);
     if (mf) {
       const src = mf?.elementRef?.nativeElement?.getAttribute('src');
-      mf.elementRef.nativeElement.contentWindow?.postMessage(message, src);
+      mf.elementRef.nativeElement.contentWindow?.postMessage(this.messageCustomData(message), src);
     }
   }
 
   public sendMessageToParent(message: any): void {
-    parent.postMessage(message, this.parentURI);
-  }
-
-  public getOnMessageObservable(): Observable<any> {
-    return this.onMessage$.asObservable();
+    this.parentURIs.map((uri) => {
+      parent.postMessage(this.messageCustomData(message), uri);
+    });
   }
 }
 
