@@ -34,12 +34,16 @@ export class MicroFrontendService {
   private initOnMessageEvent(): void {
     window.onmessage = (event: any) => {
       if (
-        (this.parentURIs[0] === event.origin) ||
+        (this.findParentURIByOrigin(event.origin)) ||
         (this.findMicroFrontendByOrigin(event.origin))
       ) {
         this.onMessage$.next(event);
       }
     }
+  }
+
+  private findParentURIByOrigin(origin: string): string | undefined {
+    return this.parentURIs.find((parentURI, index) => parentURI === origin);
   }
 
   private findMicroFrontendByOrigin(origin: string): MicroFrontend | undefined {
