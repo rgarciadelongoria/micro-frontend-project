@@ -33,11 +33,7 @@ export class MicroFrontendService {
 
   private initOnMessageEvent(): void {
     window.onmessage = (event: any) => {
-      if (
-        (event.data?.mf) && // only events with mf: true
-        ((this.findParentURIByOrigin(event.origin)) ||
-        (this.findMicroFrontendByOrigin(event.origin)))
-      ) {
+      if (this.hasCorrectOrigin(event)) {
         const incomingSharedData = event?.data?.message?.sharedData; // Child to parent
         const incomingGlobalSharedData = event?.data?.message?.globalSharedData; // Parent to child
         if (incomingSharedData) {
@@ -49,6 +45,12 @@ export class MicroFrontendService {
         }
       }
     }
+  }
+
+  private hasCorrectOrigin(event: any): boolean {
+    return (event.data?.mf) && // only events with mf: true
+    ((this.findParentURIByOrigin(event.origin)) ||
+    (this.findMicroFrontendByOrigin(event.origin)));
   }
 
   private findParentURIByOrigin(origin: string): string | undefined {
@@ -63,7 +65,7 @@ export class MicroFrontendService {
     return this.microFrontends.find((mf, index) => mf?.elementRef?.nativeElement?.getAttribute('name') === name);
   }
 
-  private messageCustomData(message: any): MicroFrontendMessage {
+  private addMessageCustomData(message: any): MicroFrontendMessage {
     return {
       mf: true,
       data: {
@@ -86,8 +88,6 @@ export class MicroFrontendService {
         }
       });
     }
-    this.sendGlobalSharedDataToAllChilds();
-    this.sendSharedDataToAllParents();
   }
 
   private updateGlobalSharedDataWithIncomingSharedData(incomingSharedData: MicroFrontendSharedData): void {
@@ -103,33 +103,41 @@ export class MicroFrontendService {
         }
       });
     }
+    this.sendSharedDataToAllParents(incomingSharedData);
     this.sendGlobalSharedDataToAllChilds();
   }
 
   private updateGlobalSharedDataWithIncomingGlobalSharedData(incomingGlobalSharedData: MicroFrontendSharedData[]): void {
     this.globalSharedData = incomingGlobalSharedData;
-    // this.updateGlobalSharedDataWithOwnSharedData();
+    this.sendGlobalSharedDataToAllChilds();
   }
 
   private sendGlobalSharedDataToAllChilds(): void {
     this.sendMessageToAllChilds({globalSharedData: this.globalSharedData});
   }
 
-  private sendSharedDataToAllParents(): void {
-    this.sendMessageToAllParents({sharedData: this.sharedData});
+  private sendSharedDataToAllParents(sharedData?: MicroFrontendSharedData): void {
+    this.sendMessageToAllParents({sharedData: (sharedData) ? sharedData : this.sharedData});
   }
 
   /*
   Config
   */
 
-  public init(parentURIs: string[] = []): void {
+  public init(parentURIs: string[] = [], microFrontends: MicroFrontend[] = []): void {
     this.parentURIs = parentURIs;
+    this.microFrontends = microFrontends;
     this.initOnMessageEvent();
+    this.updateGlobalSharedDataWithOwnSharedData();
+    this.sendSharedDataToAllParents();
   }
 
   public addMicroFrontend(microFrontend: MicroFrontend): void {
     this.microFrontends.push(microFrontend);
+  }
+
+  public addParentURI(parentURI: string): void {
+    this.parentURIs.push(parentURI);
   }
 
   public getOnMessageObservable(): Observable<any> {
@@ -160,7 +168,7 @@ export class MicroFrontendService {
     const mf = this.findMicroFrontendByName(name);
     if (mf) {
       const src = mf?.elementRef?.nativeElement?.getAttribute('src');
-      mf.elementRef.nativeElement.contentWindow?.postMessage(this.messageCustomData(message), src);
+      mf.elementRef.nativeElement.contentWindow?.postMessage(this.addMessageCustomData(message), src);
     }
   }
 
@@ -168,7 +176,7 @@ export class MicroFrontendService {
     this.microFrontends.map((mf) => {
       const src = mf?.elementRef?.nativeElement?.getAttribute('src');
       if (src) {
-        mf.elementRef.nativeElement.contentWindow?.postMessage(this.messageCustomData(message), src);
+        mf.elementRef.nativeElement.contentWindow?.postMessage(this.addMessageCustomData(message), src);
       }
     });
   }
@@ -180,14 +188,14 @@ export class MicroFrontendService {
   public sendMessageToParent(uri: string, message: any): void {
     const findParentURI = this.parentURIs.find((parentURI) => parentURI === uri);
     if (findParentURI) {
-      parent.postMessage(this.messageCustomData(message), findParentURI);
+      parent.postMessage(this.addMessageCustomData(message), findParentURI);
     }
   }
 
   public sendMessageToAllParents(message: any): void {
     this.parentURIs.map((uri) => {
       if (uri) {
-        parent.postMessage(this.messageCustomData(message), uri);
+        parent.postMessage(this.addMessageCustomData(message), uri);
       }
     });
   }
@@ -212,6 +220,11 @@ export class MicroFrontendService {
       data
     }
     this.updateGlobalSharedDataWithOwnSharedData();
+    if (this.parentURIs.length) {
+      this.sendSharedDataToAllParents();
+    } else {
+      this.sendGlobalSharedDataToAllChilds();
+    }
   }
 
   public deleteSharedData(key: string): void {
@@ -222,11 +235,21 @@ export class MicroFrontendService {
       data
     }
     this.updateGlobalSharedDataWithOwnSharedData();
+    if (this.parentURIs.length) {
+      this.sendSharedDataToAllParents();
+    } else {
+      this.sendGlobalSharedDataToAllChilds();
+    }
   }
 
   public deleteAllSharedData(): void {
     this.sharedData.data = {};
     this.updateGlobalSharedDataWithOwnSharedData();
+    if (this.parentURIs.length) {
+      this.sendSharedDataToAllParents();
+    } else {
+      this.sendGlobalSharedDataToAllChilds();
+    }
   }
 }
 
