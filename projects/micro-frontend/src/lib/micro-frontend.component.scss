@@ -4,8 +4,8 @@
     padding: 10px;
     .actions {
         display: flex;
-        flex-direction: column;
         width: 100%;
+        margin-bottom: 10px;
     }
     .list {
         overflow-y: auto;

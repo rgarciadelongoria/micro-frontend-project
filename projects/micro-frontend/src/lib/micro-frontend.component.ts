@@ -11,6 +11,9 @@ export class MicroFrontendComponent implements OnInit {
 
   public events: MessageEvent[] = [];
   public exampleText: string = '';
+  public showGlobalSharedData: boolean = true;
+  public showSharedData: boolean = true;
+  public showMessages: boolean = true;
 
   constructor(public microFrontendSrv: MicroFrontendService) { }
 

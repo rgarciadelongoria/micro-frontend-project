@@ -6,6 +6,7 @@ export interface MicroFrontend {
 }
 
 export interface MicroFrontendMessage {
+  mf: boolean;
   data: {
     location: Location;
   }
@@ -33,8 +34,9 @@ export class MicroFrontendService {
   private initOnMessageEvent(): void {
     window.onmessage = (event: any) => {
       if (
-        (this.findParentURIByOrigin(event.origin)) ||
-        (this.findMicroFrontendByOrigin(event.origin))
+        (event.data?.mf) && // only events with mf: true
+        ((this.findParentURIByOrigin(event.origin)) ||
+        (this.findMicroFrontendByOrigin(event.origin)))
       ) {
         const incomingSharedData = event?.data?.message?.sharedData; // Child to parent
         const incomingGlobalSharedData = event?.data?.message?.globalSharedData; // Parent to child
@@ -63,6 +65,7 @@ export class MicroFrontendService {
 
   private messageCustomData(message: any): MicroFrontendMessage {
     return {
+      mf: true,
       data: {
         location: JSON.parse(JSON.stringify(window.location)),
       },
@@ -226,6 +229,11 @@ export class MicroFrontendService {
     this.updateGlobalSharedDataWithOwnSharedData();
   }
 }
+
+/**
+ * Metodo para añadir hostURIs en caliente y posibilidad de incluir iframes en el init
+ * Poder hacer todo por init o todo por metodos posteriores
+ */
 
 /**
  * Registrar log de mensajes, fecha y hora, emisor y receptor ¿datos?
