@@ -12,6 +12,11 @@ export interface MicroFrontendMessage {
   message: any;
 }
 
+export interface MicroFrontendSharedData {
+  host: string;
+  data: any;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,11 +25,13 @@ export class MicroFrontendService {
   private parentURIs: string[] = [];
   private microFrontends: MicroFrontend[] = [];
   private onMessage$: Subject<any> = new Subject();
-  private sharedData: any = {};
+  private sharedData: MicroFrontendSharedData = {
+    host: this.host,
+    data: {}
+  };
+  private globalSharedData: MicroFrontendSharedData[] = [];
 
-  constructor() {
-    this.sharedData = {};
-  }
+  constructor() {}
 
   private initOnMessageEvent(): void {
     window.onmessage = (event: any) => {
@@ -32,7 +39,7 @@ export class MicroFrontendService {
         (this.findParentURIByOrigin(event.origin)) ||
         (this.findMicroFrontendByOrigin(event.origin))
       ) {
-        if (event?.data?.message?.sharedData) {
+        if (event?.data?.message?.sharedDataFromChild) {
           // Update globalSharedData
         } else {
           this.onMessage$.next(event);
@@ -62,13 +69,19 @@ export class MicroFrontendService {
     }
   }
 
-  private sendSharedData(): void {
-    this.sendMessageToAllChilds({
-      sharedData: this.sharedData
-    });
-    this.sendMessageToAllParents({
-      sharedData: this.sharedData
-    });
+  private updateGlobalSharedData(): void {
+    const globalSharedDataHasSharedData = this.globalSharedData.find((sharedData) => sharedData.host === this.host);
+    if (!globalSharedDataHasSharedData) {
+      this.globalSharedData.push(this.sharedData);
+    } else {
+      this.globalSharedData = this.globalSharedData.map((sharedData) => {
+        if (sharedData.host === this.host) {
+          return this.sharedData;
+        } else {
+          return sharedData;
+        }
+      });
+    }
   }
 
   /*
@@ -78,6 +91,7 @@ export class MicroFrontendService {
   public init(parentURIs: string[] = []): void {
     this.parentURIs = parentURIs;
     this.initOnMessageEvent();
+    // this.updateGlobalSharedData();
   }
 
   public addMicroFrontend(microFrontend: MicroFrontend): void {
@@ -132,14 +146,27 @@ export class MicroFrontendService {
   Shared data
   */
 
+  public getGlobalSharedData(): MicroFrontendSharedData[] {
+    return this.globalSharedData;
+  }
+
+  public getSharedData(): MicroFrontendSharedData {
+    return this.sharedData;
+  }
+
   public setSharedData(key: string, value: any): void {
-    this.sharedData[this.host] = {[key]: value};
-    this.sendSharedData();
+    const data = this.sharedData.data;
+    data[key] = value;
+    this.sharedData = {
+      host: this.host,
+      data
+    }
+    this.updateGlobalSharedData();
   }
 
   public deleteAllSharedData(): void {
-    delete this.sharedData[this.host];
-    this.sendSharedData();
+    this.sharedData.data = {};
+    this.updateGlobalSharedData();
   }
 
   /*
