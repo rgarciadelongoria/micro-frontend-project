@@ -29,7 +29,7 @@ export class MicroFrontendService {
     host: this.host,
     data: {}
   };
-  private globalSharedData: MicroFrontendSharedData[] = [];
+  private globalSharedData: MicroFrontendSharedData[] = [this.sharedData];
 
   constructor() {}
 
@@ -39,9 +39,11 @@ export class MicroFrontendService {
         (this.findParentURIByOrigin(event.origin)) ||
         (this.findMicroFrontendByOrigin(event.origin))
       ) {
-        if (event?.data?.message?.sharedData) {
+        const incomingSharedData = event?.data?.message?.sharedData;
+        if (incomingSharedData) {
           // Update globalSharedData
-          console.log(event);
+          console.log(incomingSharedData);
+          this.updateGlobalSharedDataWithIncomingSharedData(incomingSharedData)
         } else {
           this.onMessage$.next(event);
         }
@@ -70,7 +72,7 @@ export class MicroFrontendService {
     }
   }
 
-  private updateGlobalSharedData(): void {
+  private updateGlobalSharedDataWithOwnSharedData(): void {
     const globalSharedDataHasSharedData = this.globalSharedData.find((sharedData) => sharedData.host === this.host);
     if (!globalSharedDataHasSharedData) {
       this.globalSharedData.push(this.sharedData);
@@ -84,10 +86,30 @@ export class MicroFrontendService {
       });
     }
     this.sendGlobalSharedDataToAllChilds();
+    this.sendGlobalSharedDataToAllParents();
+  }
+
+  private updateGlobalSharedDataWithIncomingSharedData(incomingSharedData: MicroFrontendSharedData): void {
+    const globalSharedDataHasSharedData = this.globalSharedData.find((sharedData) => sharedData.host === incomingSharedData.host);
+    if (!globalSharedDataHasSharedData) {
+      this.globalSharedData.push(incomingSharedData);
+    } else {
+      this.globalSharedData = this.globalSharedData.map((sharedData) => {
+        if (sharedData.host === incomingSharedData.host) {
+          return incomingSharedData;
+        } else {
+          return sharedData;
+        }
+      });
+    }
   }
 
   private sendGlobalSharedDataToAllChilds(): void {
     this.sendMessageToAllChilds({sharedData: this.sharedData});
+  }
+
+  private sendGlobalSharedDataToAllParents(): void {
+    this.sendMessageToAllParents({sharedData: this.sharedData});
   }
 
   /*
@@ -166,12 +188,12 @@ export class MicroFrontendService {
       host: this.host,
       data
     }
-    this.updateGlobalSharedData();
+    this.updateGlobalSharedDataWithOwnSharedData();
   }
 
   public deleteAllSharedData(): void {
     this.sharedData.data = {};
-    this.updateGlobalSharedData();
+    this.updateGlobalSharedDataWithOwnSharedData();
   }
 
   /*
