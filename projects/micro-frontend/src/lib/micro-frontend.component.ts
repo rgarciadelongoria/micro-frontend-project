@@ -36,8 +36,7 @@ export class MicroFrontendComponent implements OnInit {
   }
 
   public setSharedData(): void {
-    this.microFrontendSrv.setSharedData('persistentExampleTestNode', {'persistentExampleTestNode': 'you can delete all data'});
-    this.microFrontendSrv.setSharedData('exampleTextNode', {'exampleText': this.exampleText});
+    this.microFrontendSrv.setSharedData(this.exampleText, {'exampleText': this.exampleText});
   }
 
   public deleteAllSharedData(): void {
@@ -45,6 +44,6 @@ export class MicroFrontendComponent implements OnInit {
   }
 
   public deleteSharedData(): void {
-    this.microFrontendSrv.deleteSharedData('exampleTextNode');
+    this.microFrontendSrv.deleteSharedData(this.exampleText);
   }
 }
