@@ -39,8 +39,9 @@ export class MicroFrontendService {
         (this.findParentURIByOrigin(event.origin)) ||
         (this.findMicroFrontendByOrigin(event.origin))
       ) {
-        if (event?.data?.message?.sharedDataFromChild) {
+        if (event?.data?.message?.sharedData) {
           // Update globalSharedData
+          console.log(event);
         } else {
           this.onMessage$.next(event);
         }
@@ -82,6 +83,11 @@ export class MicroFrontendService {
         }
       });
     }
+    this.sendGlobalSharedDataToAllChilds();
+  }
+
+  private sendGlobalSharedDataToAllChilds(): void {
+    this.sendMessageToAllChilds({sharedData: this.sharedData});
   }
 
   /*
@@ -91,7 +97,6 @@ export class MicroFrontendService {
   public init(parentURIs: string[] = []): void {
     this.parentURIs = parentURIs;
     this.initOnMessageEvent();
-    // this.updateGlobalSharedData();
   }
 
   public addMicroFrontend(microFrontend: MicroFrontend): void {
