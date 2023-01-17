@@ -29,7 +29,7 @@ export class MicroFrontendService {
     host: this.host,
     data: {}
   };
-  private globalSharedData: MicroFrontendSharedData[] = [this.sharedData];
+  private globalSharedData: MicroFrontendSharedData[] = [];
 
   constructor() {}
 
@@ -90,7 +90,7 @@ export class MicroFrontendService {
         }
       });
     }
-    // this.sendGlobalSharedDataToAllChilds();
+    this.sendGlobalSharedDataToAllChilds();
     this.sendSharedDataToAllParents();
   }
 
