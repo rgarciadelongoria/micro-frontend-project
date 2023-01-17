@@ -39,11 +39,16 @@ export class MicroFrontendService {
         (this.findParentURIByOrigin(event.origin)) ||
         (this.findMicroFrontendByOrigin(event.origin))
       ) {
-        const incomingSharedData = event?.data?.message?.sharedData;
+        const incomingSharedData = event?.data?.message?.sharedData; // Child to parent
+        const incomingGlobalSharedData = event?.data?.message?.globalSharedData; // Parent to child
         if (incomingSharedData) {
           // Update globalSharedData
           console.log(incomingSharedData);
-          this.updateGlobalSharedDataWithIncomingSharedData(incomingSharedData)
+          this.updateGlobalSharedDataWithIncomingSharedData(incomingSharedData);
+        } else if (incomingGlobalSharedData) {
+          // Update globalSharedData
+          console.log(incomingGlobalSharedData);
+          this.updateGlobalSharedDataWithIncomingGlobalSharedData(incomingGlobalSharedData);
         } else {
           this.onMessage$.next(event);
         }
@@ -85,8 +90,8 @@ export class MicroFrontendService {
         }
       });
     }
-    this.sendGlobalSharedDataToAllChilds();
-    this.sendGlobalSharedDataToAllParents();
+    // this.sendGlobalSharedDataToAllChilds();
+    this.sendSharedDataToAllParents();
   }
 
   private updateGlobalSharedDataWithIncomingSharedData(incomingSharedData: MicroFrontendSharedData): void {
@@ -102,13 +107,19 @@ export class MicroFrontendService {
         }
       });
     }
+    this.sendGlobalSharedDataToAllChilds();
+  }
+
+  private updateGlobalSharedDataWithIncomingGlobalSharedData(incomingGlobalSharedData: MicroFrontendSharedData[]): void {
+    this.globalSharedData = incomingGlobalSharedData;
+    // this.updateGlobalSharedDataWithOwnSharedData();
   }
 
   private sendGlobalSharedDataToAllChilds(): void {
-    this.sendMessageToAllChilds({sharedData: this.sharedData});
+    this.sendMessageToAllChilds({globalSharedData: this.globalSharedData});
   }
 
-  private sendGlobalSharedDataToAllParents(): void {
+  private sendSharedDataToAllParents(): void {
     this.sendMessageToAllParents({sharedData: this.sharedData});
   }
 
