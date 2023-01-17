@@ -1,0 +1,30 @@
+<div class="main">
+    <h3>{{ this.microFrontendSrv.getHost() }}</h3>
+    <pre><p>Parent URIs: {{ this.microFrontendSrv.getParentURIs() | json }}</p></pre>
+    <section class="actions">
+        <input placeholder="write a text..." [(ngModel)]="exampleText"/>
+        <button (click)="sendMessageToAllParents()">sms parents</button>
+        <button (click)="sendMessageToAllChilds()">sms children</button>
+        <button (click)="setSharedData()">set data</button>
+        <button (click)="deleteAllSharedData()">delete all data</button>
+        <button (click)="deleteSharedData()">delete 'exampleTextNode' data</button>
+    </section>
+    <section>
+        <b>globalSharedData</b>
+        <div class="list">
+            <pre><p>{{ microFrontendSrv.getGlobalSharedData() | json }}</p></pre>
+        </div>
+    </section>
+    <section>
+        <b>sharedData</b>
+        <div class="list">
+            <pre><p>{{ microFrontendSrv.getSharedData() | json }}</p></pre>
+        </div>
+    </section>
+    <section>
+        <b>Messages</b>
+        <div class="list">
+            <pre><p *ngFor="let event of events">{{event.data | json}}</p></pre>
+        </div>
+    </section>
+</div>

@@ -1,0 +1,14 @@
+.main {
+    background-color: #ebccff;
+    border-radius: 10px;
+    padding: 10px;
+    .actions {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+    }
+    .list {
+        overflow-y: auto;
+        max-height: 500px;
+    }
+}

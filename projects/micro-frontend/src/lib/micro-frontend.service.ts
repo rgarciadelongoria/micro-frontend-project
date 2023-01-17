@@ -25,10 +25,7 @@ export class MicroFrontendService {
   private parentURIs: string[] = [];
   private microFrontends: MicroFrontend[] = [];
   private onMessage$: Subject<any> = new Subject();
-  private sharedData: MicroFrontendSharedData = {
-    host: this.host,
-    data: {}
-  };
+  private sharedData: MicroFrontendSharedData = {host: this.host, data: {}};
   private globalSharedData: MicroFrontendSharedData[] = [];
 
   constructor() {}
@@ -138,6 +135,22 @@ export class MicroFrontendService {
 
   public getOnMessageObservable(): Observable<any> {
     return this.onMessage$.asObservable();
+  }
+
+  /*
+  Info
+  */
+
+  public getHost(): string {
+    return this.host;
+  }
+
+  public getParentURIs(): string[] {
+    return this.parentURIs;
+  }
+
+  public getMicroFrontends(): MicroFrontend[] {
+    return this.microFrontends;
   }
 
   /*
