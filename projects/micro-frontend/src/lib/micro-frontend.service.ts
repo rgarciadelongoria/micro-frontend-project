@@ -39,12 +39,8 @@ export class MicroFrontendService {
         const incomingSharedData = event?.data?.message?.sharedData; // Child to parent
         const incomingGlobalSharedData = event?.data?.message?.globalSharedData; // Parent to child
         if (incomingSharedData) {
-          // Update globalSharedData
-          console.log(incomingSharedData);
           this.updateGlobalSharedDataWithIncomingSharedData(incomingSharedData);
         } else if (incomingGlobalSharedData) {
-          // Update globalSharedData
-          console.log(incomingGlobalSharedData);
           this.updateGlobalSharedDataWithIncomingGlobalSharedData(incomingGlobalSharedData);
         } else {
           this.onMessage$.next(event);
