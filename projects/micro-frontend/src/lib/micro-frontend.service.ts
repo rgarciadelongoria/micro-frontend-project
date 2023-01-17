@@ -202,21 +202,20 @@ export class MicroFrontendService {
     this.updateGlobalSharedDataWithOwnSharedData();
   }
 
+  public deleteSharedData(key: string): void {
+    const data = this.sharedData.data;
+    delete data[key];
+    this.sharedData = {
+      host: this.host,
+      data
+    }
+    this.updateGlobalSharedDataWithOwnSharedData();
+  }
+
   public deleteAllSharedData(): void {
     this.sharedData.data = {};
     this.updateGlobalSharedDataWithOwnSharedData();
   }
-
-  /*
-  Brother communication (talk with father first and father with brother)
-
-  sendMessageToBrother(name: string, message: any): void {}
-  */
-
-  /*
-  Family communication 
-  sendMessageToAllFamily(name: string, message: any): void {}
-  */
 }
 
 /**
