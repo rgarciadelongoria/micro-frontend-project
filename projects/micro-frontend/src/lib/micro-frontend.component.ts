@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { MicroFrontendService } from './micro-frontend.service';
 
 @Component({
   selector: 'lib-micro-frontend',
@@ -12,7 +13,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MicroFrontendComponent implements OnInit {
 
-  constructor() { }
+  constructor(public microFrontendSrv: MicroFrontendService) { }
 
   ngOnInit(): void {
   }

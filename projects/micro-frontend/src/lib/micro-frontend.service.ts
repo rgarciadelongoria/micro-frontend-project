@@ -16,20 +16,15 @@ export interface MicroFrontendMessage {
   providedIn: 'root'
 })
 export class MicroFrontendService {
-
-  /**
-   * IMPORTANTE, UN HIJO PUEDE TENER MUCHOS PADRES, HACER QUE FUNCIONE IGUAL QUE CON LOS HIJOS, CON VARIOS PADRES.
-   * string -> array de strings
-   * se inicializa de forma automatica con los antecesors no hace falta especificar url del padre
-   * si se debe poder especificar un array estricto de padres en cuyo caso no se inicializa de forma automática
-   * para poder restringuir quien puede o no comunicarse como padre
-   */
-
-  private parentURIs: string[] = [''];
+  private host: string = window.location.host;
+  private parentURIs: string[] = [];
   private microFrontends: MicroFrontend[] = [];
   private onMessage$: Subject<any> = new Subject();
+  private sharedData: any = {};
 
-  constructor() { }
+  constructor() {
+    this.sharedData = {};
+  }
 
   private initOnMessageEvent(): void {
     window.onmessage = (event: any) => {
@@ -37,7 +32,11 @@ export class MicroFrontendService {
         (this.findParentURIByOrigin(event.origin)) ||
         (this.findMicroFrontendByOrigin(event.origin))
       ) {
-        this.onMessage$.next(event);
+        if (event?.data?.message?.sharedData) {
+          // Update globalSharedData
+        } else {
+          this.onMessage$.next(event);
+        }
       }
     }
   }
@@ -63,7 +62,20 @@ export class MicroFrontendService {
     }
   }
 
-  public init(parentURIs: string[] = ['']): void {
+  private sendSharedData(): void {
+    this.sendMessageToAllChilds({
+      sharedData: this.sharedData
+    });
+    this.sendMessageToAllParents({
+      sharedData: this.sharedData
+    });
+  }
+
+  /*
+  Config
+  */
+
+  public init(parentURIs: string[] = []): void {
     this.parentURIs = parentURIs;
     this.initOnMessageEvent();
   }
@@ -76,6 +88,10 @@ export class MicroFrontendService {
     return this.onMessage$.asObservable();
   }
 
+  /*
+  Child communication
+  */
+
   public sendMessageToChild(name: string, message: any): void {
     const mf = this.findMicroFrontendByName(name);
     if (mf) {
@@ -87,14 +103,18 @@ export class MicroFrontendService {
   public sendMessageToAllChilds(message: any): void {
     this.microFrontends.map((mf) => {
       const src = mf?.elementRef?.nativeElement?.getAttribute('src');
-      mf.elementRef.nativeElement.contentWindow?.postMessage(this.messageCustomData(message), src);
+      if (src) {
+        mf.elementRef.nativeElement.contentWindow?.postMessage(this.messageCustomData(message), src);
+      }
     });
   }
 
+  /*
+  Parent communication
+  */
+
   public sendMessageToParent(uri: string, message: any): void {
-    const findParentURI = this.parentURIs.find((parentURI) => {
-      return parentURI === uri;
-    });
+    const findParentURI = this.parentURIs.find((parentURI) => parentURI === uri);
     if (findParentURI) {
       parent.postMessage(this.messageCustomData(message), findParentURI);
     }
@@ -102,9 +122,36 @@ export class MicroFrontendService {
 
   public sendMessageToAllParents(message: any): void {
     this.parentURIs.map((uri) => {
-      parent.postMessage(this.messageCustomData(message), uri);
+      if (uri) {
+        parent.postMessage(this.messageCustomData(message), uri);
+      }
     });
   }
+
+  /*
+  Shared data
+  */
+
+  public setSharedData(key: string, value: any): void {
+    this.sharedData[this.host] = {[key]: value};
+    this.sendSharedData();
+  }
+
+  public deleteAllSharedData(): void {
+    delete this.sharedData[this.host];
+    this.sendSharedData();
+  }
+
+  /*
+  Brother communication (talk with father first and father with brother)
+
+  sendMessageToBrother(name: string, message: any): void {}
+  */
+
+  /*
+  Family communication 
+  sendMessageToAllFamily(name: string, message: any): void {}
+  */
 }
 
 /**
