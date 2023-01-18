@@ -20,20 +20,45 @@ Navigate to `http://localhost:4200/`
 
 In this example we have 4 angular projects running on different URLs.
 
-The project is configured to act as father (4200), father's child (4201), father´s child with it's own child (father 2) (4202) and father 2's child.
+The project is configured to act as parent (4200), parent's child (4201), parent child with it's own child (parent 2) (4202) and parent 2's child.
 
 In this example we use library through MicroFrontendComponent to see some capabilities.
 
 ## Getting started
 
-Setting up library like father
+Setting up library as parent.
 
-```javascript
-constructor(public microFrontendSrv: MicroFrontendService) { }
+```html
+<iframe #child src="http://localhost:4201" name="child"></iframe>
+```
+
+```typescript
+@ViewChild('child') iframeChild!: ElementRef;
+
+constructor(private microFrontendSrv: MicroFrontendService) { }
 
 ngOnInit(): void {
-    this.microFrontendSrv.init(this.parentURIs);
-    this.microFrontendSrv.getOnMessageObservable().subscribe((message: any) => this.onMessage(message));
+    this.microFrontendSrv.init();
+    this.microFrontendSrv.getOnMessageObservable().subscribe((message: any) => {
+        // Do something with the received message
+    });
+}
+
+ngAfterViewInit(): void {
+    this.microFrontendLibComponent.addMicroFrontend({elementRef: this.iframeChild});
+}
+```
+
+Setting up library as child.
+
+```typescript
+constructor(private microFrontendSrv: MicroFrontendService) { }
+
+ngOnInit(): void {
+    this.microFrontendSrv.init(['http://localhost:4200']);
+    this.microFrontendSrv.getOnMessageObservable().subscribe((message: any) => {
+        // Do something with the received message
+    });
 }
 ```
 
