@@ -1,4 +1,4 @@
-<div class="main">
+<div class="main" [ngClass]="getClass()">
     <h3>{{ this.microFrontendSrv.getHost() }}</h3>
     <p>Parent URIs: {{ this.microFrontendSrv.getParentURIs() | json }}</p>
     <section class="actions">
@@ -10,20 +10,20 @@
         <button (click)="deleteSharedData()">delete {{ this.exampleText }} data</button>
     </section>
     <section>
-        <b (click)="showGlobalSharedData = !showGlobalSharedData">globalSharedData</b>
-        <div *ngIf="showGlobalSharedData" class="list">
+        <b>globalSharedData</b>
+        <div class="list">
             <pre><p>{{ microFrontendSrv.getGlobalSharedData() | json }}</p></pre>
         </div>
     </section>
     <section>
-        <b (click)="showSharedData = !showSharedData">sharedData</b>
-        <div *ngIf="showSharedData" class="list">
+        <b>sharedData</b>
+        <div class="list">
             <pre><p>{{ microFrontendSrv.getSharedData() | json }}</p></pre>
         </div>
     </section>
     <section>
-        <b (click)="showMessages = !showMessages">Messages</b>
-        <div *ngIf="showMessages" class="list">
+        <b>Messages</b>
+        <div class="list">
             <pre><p *ngFor="let event of events">{{event.data | json}}</p></pre>
         </div>
     </section>

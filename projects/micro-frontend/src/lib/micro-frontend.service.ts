@@ -252,16 +252,3 @@ export class MicroFrontendService {
     }
   }
 }
-
-/**
- * Metodo para añadir hostURIs en caliente y posibilidad de incluir iframes en el init
- * Poder hacer todo por init o todo por metodos posteriores
- */
-
-/**
- * Registrar log de mensajes, fecha y hora, emisor y receptor ¿datos?
- * Enviar mensaje a un hermano ¿abuelo, nieto?
- * Ver elementos de mayor proteccion
- * Probar en urls reales con dominios distintos
- * ¿Ping Pong? respuesta silenciosa para confirmar recepción de mensaje? reintentos?
- */

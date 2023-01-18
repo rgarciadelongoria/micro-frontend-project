@@ -4,11 +4,17 @@
     padding: 10px;
     .actions {
         display: flex;
+        flex-wrap: wrap;
         width: 100%;
         margin-bottom: 10px;
     }
-    .list {
-        overflow-y: auto;
-        max-height: 500px;
+    &.father {
+        background-color: #85d556;
+    }
+    &.child {
+        background-color: #d1bf50;
+    }
+    &.father-child {
+        background-color: #97aed9;
     }
 }

@@ -11,9 +11,6 @@ export class MicroFrontendComponent implements OnInit {
 
   public events: MessageEvent[] = [];
   public exampleText: string = '';
-  public showGlobalSharedData: boolean = true;
-  public showSharedData: boolean = true;
-  public showMessages: boolean = true;
 
   constructor(public microFrontendSrv: MicroFrontendService) { }
 
@@ -24,6 +21,19 @@ export class MicroFrontendComponent implements OnInit {
 
   private onMessage(e: MessageEvent): void {
     this.events.push(e);
+  }
+
+  public getClass(): string {
+    if (this.microFrontendSrv.getParentURIs.length && 
+      this.microFrontendSrv.getMicroFrontends().length) {
+      return 'father-child';
+    } else if (this.microFrontendSrv.getParentURIs.length) {
+      return 'father';
+    } else if (this.microFrontendSrv.getMicroFrontends().length) {
+      return 'child';
+    } else {
+      return '';
+    }
   }
 
   public addMicroFrontend(microFrontend: MicroFrontend): void {

@@ -1,6 +1,14 @@
 # MicroFrontendProject
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.1.1.
+Library that allows easy communication between iframes. Designed for the development of micro frontends.
+
+
+
+
+
+
+
+
 
 ## Development server
 

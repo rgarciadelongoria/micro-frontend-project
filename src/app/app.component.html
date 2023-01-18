@@ -1,2 +1,10 @@
-<p>project</p>
-<lib-micro-frontend></lib-micro-frontend>
+<section id="father" *ngIf="hosts.father === currentOrigin">
+    <div class="father-content">
+        <lib-micro-frontend #microFrontendLibComponent></lib-micro-frontend>
+        <iframe #child src="http://localhost:4201" name="child"></iframe>
+        <iframe #child2 src="http://localhost:4202" name="child2"></iframe>
+    </div>
+</section>
+<section id="father" *ngIf="(hosts.child === currentOrigin || hosts.child2 === currentOrigin)">
+    <lib-micro-frontend #microFrontendLibComponent [parentURIs]="[hosts.father]"></lib-micro-frontend>
+</section>
