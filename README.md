@@ -26,13 +26,11 @@ The project is configured to act as parent (4200), parent's child (4201), parent
 
 In this example we use library through MicroFrontendComponent to see some capabilities.
 
-## Getting started
-
-# Install dependency
+## Install dependency
 
 `npm i @rgarciadelongoria/micro-frontend`
 
-# Setting up parent.
+## Setting up parent.
 
 ```html
 <iframe #child src="http://localhost:4201" name="child"></iframe>
@@ -55,7 +53,7 @@ ngAfterViewInit(): void {
 }
 ```
 
-# Setting up child.
+## Setting up child.
 
 ```typescript
 constructor(private microFrontendSrv: MicroFrontendService) { }

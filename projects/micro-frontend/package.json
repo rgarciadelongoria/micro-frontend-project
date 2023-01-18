@@ -1,6 +1,6 @@
 {
   "name": "@rgarciadelongoria/micro-frontend",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Simple Angular library to work with micro frontends using iframes.",
   "peerDependencies": {
     "@angular/common": "^14.1.0",
