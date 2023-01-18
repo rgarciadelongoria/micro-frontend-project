@@ -5,7 +5,8 @@ enum Hosts {
   father = 'http://localhost:4200',
   father2 = 'http://localhost:4202',
   child = 'http://localhost:4201',
-  child2 = 'http://localhost:4202'
+  child2 = 'http://localhost:4202',
+  child3 = 'http://localhost:4203'
 }
 
 @Component({

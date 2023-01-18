@@ -2,13 +2,12 @@
     &-content {
         display: flex;
         flex-direction: row;
-        flex-wrap: wrap;
 
         > * {
             width: 350px;
             min-width: 350px;
-            height: 450px;
-            max-height: 450px;
+            height: 550px;
+            max-height: 550px;
             overflow-y: scroll;
             overflow-x: auto;
             // width: calc(50% - 125px);

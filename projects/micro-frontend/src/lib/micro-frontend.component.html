@@ -1,7 +1,6 @@
 <div class="main" [ngClass]="getClass()">
     <h3>{{ this.microFrontendSrv.getHost() }}</h3>
-        <pre><p>Parent URIs: {{ this.microFrontendSrv.getParentURIs() | json }}</p></pre>
-        <pre><p>Children: {{ this.microFrontendSrv.getMicroFrontends() | json }}</p></pre>
+    <b>Parent URIs:</b> {{ this.microFrontendSrv.getParentURIs() | json }}<p>
     <section class="actions">
         <input placeholder="write a text..." [(ngModel)]="exampleText"/>
         <button (click)="sendMessageToAllParents()">sms parents</button>
