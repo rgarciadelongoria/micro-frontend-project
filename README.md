@@ -26,6 +26,26 @@ The project is configured to act as parent (4200), parent's child (4201), parent
 
 In this example we use library through MicroFrontendComponent to see some capabilities.
 
+Micro frontends load in their respective iframes.
+
+![](https://github.com/rgarciadelongoria/micro-frontend-project/blob/main/src/assets/loading-micro-frontends.gif)
+
+The parent can send a message to his children.
+
+![](https://github.com/rgarciadelongoria/micro-frontend-project/blob/main/src/assets/sms-dad-to-children.gif)
+
+Children can send a message to their parents.
+
+![](https://github.com/rgarciadelongoria/micro-frontend-project/blob/main/src/assets/sms-children-to-dad.gif)
+
+In this case we have a child that is also a parent of its own child and they can communicate in the same way with each other.
+
+![](https://github.com/rgarciadelongoria/micro-frontend-project/blob/main/src/assets/sms-dad2-and-child2.gif)
+
+Finally we have the option of sharing global information with the whole family at different levels of relationship (grandparents, children, grandchildren...)
+
+![](https://github.com/rgarciadelongoria/micro-frontend-project/blob/main/src/assets/set-data.gif)
+
 ## Install dependency
 
 `npm i @rgarciadelongoria/micro-frontend`
