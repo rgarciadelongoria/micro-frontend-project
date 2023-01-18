@@ -5,6 +5,12 @@
         <iframe #child2 src="http://localhost:4202" name="child2"></iframe>
     </div>
 </section>
-<section id="father" *ngIf="(hosts.child === currentOrigin || hosts.child2 === currentOrigin)">
-    <lib-micro-frontend #microFrontendLibComponent [parentURIs]="[hosts.father]"></lib-micro-frontend>
+<section id="father" *ngIf="(hosts.child === currentOrigin)">
+    <lib-micro-frontend #microFrontendLibComponent [parentURIs]="[hosts.father, hosts.father2]"></lib-micro-frontend>
+</section>
+<section id="father" *ngIf="(hosts.child2 === currentOrigin)">
+    <div class="father-content">
+        <lib-micro-frontend #microFrontendLibComponent [parentURIs]="[hosts.father]"></lib-micro-frontend>
+        <iframe #child src="http://localhost:4201" name="child"></iframe>
+    </div>
 </section>

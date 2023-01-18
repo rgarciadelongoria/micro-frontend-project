@@ -3,6 +3,7 @@ import { MicroFrontendComponent, MicroFrontendService } from '../../dist/micro-f
 
 enum Hosts {
   father = 'http://localhost:4200',
+  father2 = 'http://localhost:4202',
   child = 'http://localhost:4201',
   child2 = 'http://localhost:4202'
 }
@@ -26,6 +27,9 @@ export class AppComponent {
     if (this.currentOrigin === Hosts.father) {
       this.microFrontendLibComponent.addMicroFrontend({elementRef: this.iframeChild});
       this.microFrontendLibComponent.addMicroFrontend({elementRef: this.iframeChild2});
+    }
+    if (this.currentOrigin === Hosts.father2) {
+      this.microFrontendLibComponent.addMicroFrontend({elementRef: this.iframeChild});
     }
   }
 }
