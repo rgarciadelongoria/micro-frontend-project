@@ -1,9 +1,26 @@
 {
-  "name": "micro-frontend",
-  "version": "0.0.1",
+  "name": "@rgarciadelongoria/micro-frontend",
+  "version": "0.0.2",
+  "description": "Simple Angular library to work with micro frontends using iframes.",
   "peerDependencies": {
     "@angular/common": "^14.1.0",
     "@angular/core": "^14.1.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rgarciadelongoria/micro-frontend-project.git"
+  },
+  "keywords": [
+    "angular",
+    "microfrontend",
+    "micro",
+    "frontend",
+    "iframe"
+  ],
+  "author": "Rubén García de Longoria <rgarciadelongoria@gmail.com> (https://longocode.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rgarciadelongoria/micro-frontend-project/issues"
   },
   "dependencies": {
     "tslib": "^2.3.0"

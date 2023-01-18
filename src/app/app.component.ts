@@ -22,8 +22,6 @@ export class AppComponent {
   hosts = Hosts;
   currentOrigin: string = window.location.origin;
 
-  constructor(private microFrontendSrv: MicroFrontendService) {}
-
   ngAfterViewInit(): void {
     if (this.currentOrigin === Hosts.father) {
       this.microFrontendLibComponent.addMicroFrontend({elementRef: this.iframeChild});

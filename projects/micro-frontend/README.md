@@ -1,24 +1,69 @@
-# MicroFrontend
+# MicroFrontendProject
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.1.0.
+Angular library that allows easy communication between iframes. Designed for the development of micro frontends.
 
-## Code scaffolding
+## Run example project
 
-Run `ng generate component component-name --project micro-frontend` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project micro-frontend`.
-> Note: Don't forget to add `--project micro-frontend` or else it will be added to the default project in your `angular.json` file. 
+Run `npm i` to install dependencies.
 
-## Build
+Run `npm run build micro-frontend` to build de library.
 
-Run `ng build micro-frontend` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `ng serve --port 4200` to serve father project
 
-## Publishing
+Run `ng serve --port 4201` to serve child project
 
-After building your library with `ng build micro-frontend`, go to the dist folder `cd dist/micro-frontend` and run `npm publish`.
+Run `ng serve --port 4202` to serve father2-child2 project
 
-## Running unit tests
+Run `ng serve --port 4203` to serve child3 project
 
-Run `ng test micro-frontend` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Navigate to `http://localhost:4200/`
 
-## Further help
+## Example project explanation
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+In this example we have 4 angular projects running on different URLs.
+
+The project is configured to act as parent (4200), parent's child (4201), parent child with it's own child (parent 2) (4202) and parent 2's child.
+
+In this example we use library through MicroFrontendComponent to see some capabilities.
+
+## Getting started
+
+# Install dependency
+
+`npm i @rgarciadelongoria/micro-frontend`
+
+# Setting up parent.
+
+```html
+<iframe #child src="http://localhost:4201" name="child"></iframe>
+```
+
+```typescript
+@ViewChild('child') iframeChild!: ElementRef;
+
+constructor(private microFrontendSrv: MicroFrontendService) { }
+
+ngOnInit(): void {
+    this.microFrontendSrv.init();
+    this.microFrontendSrv.getOnMessageObservable().subscribe((message: any) => {
+        // Do something with the received message
+    });
+}
+
+ngAfterViewInit(): void {
+    this.microFrontendLibComponent.addMicroFrontend({elementRef: this.iframeChild});
+}
+```
+
+# Setting up child.
+
+```typescript
+constructor(private microFrontendSrv: MicroFrontendService) { }
+
+ngOnInit(): void {
+    this.microFrontendSrv.init(['http://localhost:4200']);
+    this.microFrontendSrv.getOnMessageObservable().subscribe((message: any) => {
+        // Do something with the received message
+    });
+}
+```
